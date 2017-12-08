@@ -21,13 +21,14 @@ add_incidence <- function(.data, .variables, prefix = NULL) {
               all(c("SID", "VN", .variables) %in% names(.data)))
 
     .data <- .data %>%
-        dplyr::arrange_(.dots = c("SID", "VN")) %>%
+        dplyr::arrange_(.dots = c("SID", "VN"))
+    incid <- .data %>%
         dplyr::group_by_("SID") %>%
         dplyr::mutate_at(.variables, dplyr::funs({
             previous <- lag(.)
             current <- .
             incid <- current - previous
-            ifelse(incid < 0, 0, incid)
+            ifelse(incid < 0 | is.na(incid), 0, incid)
         })) %>%
         dplyr::ungroup()
 
@@ -35,11 +36,14 @@ add_incidence <- function(.data, .variables, prefix = NULL) {
         stopifnot(is.character(prefix))
         search_pattern <- paste0("^(", paste(.variables, collapse = "|"), ")$")
         new_name <- paste0(prefix, "\\1")
-        names(.data) <-
-            gsub(search_pattern, new_name, names(.data))
+        names(incid) <-
+            gsub(search_pattern, new_name, names(incid))
+
+        incid <-
+            dplyr::bind_cols(incid, dplyr::select_at(.data, .variables))
     }
 
-    return(.data)
+    return(incid)
 }
 
 #' Describe the incidence of new cases of disorders/diseases over time.
@@ -65,6 +69,6 @@ desc_incidence <- function(.data, .variables, prefix = NULL) {
         add_incidence(.variables = .variables, prefix = prefix) %>%
         cases_at_each_time(.variables = .variables, prefix = prefix) %>%
         dplyr::mutate_at("Status", dplyr::funs(plyr::mapvalues(
-            ., from = 0:1, to = c("Healthy", "Incident cases")
+            ., from = 0:1, to = c("Healthy/Prevalent", "Incident cases")
         )))
 }
