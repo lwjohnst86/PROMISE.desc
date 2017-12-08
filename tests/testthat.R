@@ -1,4 +1,4 @@
 library(testthat)
-library(template.package)
+library(PROMISE.desc)
 
-test_check("template.package")
+test_check("PROMISE.desc")
