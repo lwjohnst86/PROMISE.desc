@@ -1,0 +1,72 @@
+---
+title: "How to characterize the PROMISE dataset"
+author: "Luke Johnston"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{How to characterize the PROMISE dataset}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Prevalent and incident cases
+
+PROMISE is a prospective cohort of individuals who are followed over time to see
+who developed type 2 diabetes. So part of describing the dataset is determining
+prevalence and incidence of diabetes, as well as general dysglycemia disorders
+(impaired fasting glucose and impaired glucose tolerance). There are other
+disease/disorders to characterise as well, which the functions explained below
+will be able to calculate. Before we begin, let's first load up the package as
+well as the example dataset.
+
+```{r setup}
+library(PROMISE.desc)
+data("example_data")
+dplyr::glimpse(example_data)
+```
+
+The first function `desc_prevalence` calculates prevalent cases of any
+disease/disorder. We use it by selecting the columns we want to determine
+prevalent cases. *A note*, the dataset *must* contain the columns `SID` and
+`VN`.
+
+```{r}
+prev_data <- example_data %>% 
+    desc_prevalence(c("DM", "IFG")) 
+prev_data
+```
+
+This function more or less counts disease/disorder status at each time point and
+re-arranges it into a wide format. If you want to convert this into a table, use:
+
+```{r}
+prev_data %>% 
+    desc_table(caption = "*Example* dataset showing prevalence of DM and IFG at each time point.")
+```
+
+For incident cases, you can either add the incidence cases directly to the
+dataset or describe (count) incident cases like above:
+
+```{r}
+example_data %>% 
+    add_incidence(c("DM", "IFG", "IGT"), prefix = "incid_")
+```
+
+This adds the incident data to the original dataset. If you want to describe
+(count) the incident cases, use:
+
+```{r}
+incid_data <- example_data %>% 
+    desc_incidence(c("DM", "IFG"), prefix = "incid_")
+incid_data
+```
+
+This function does the same thing as the `desc_prevalence` function, except it
+adds the incident cases before and counts these cases. Again, if you want to
+show this as a table, use:
+
+```{r}
+incid_data %>% 
+    desc_table(caption = "*Example* dataset showing incident cases of DM and IFG at each time.")
+```
+
