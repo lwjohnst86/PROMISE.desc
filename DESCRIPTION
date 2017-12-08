@@ -21,4 +21,5 @@ Imports: dplyr,
     tidyr,
     pander,
     plyr,
-    utils
+    utils,
+    magrittr
