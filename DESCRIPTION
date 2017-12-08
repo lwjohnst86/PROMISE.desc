@@ -20,4 +20,5 @@ BugReports: https://github.com/lwjohnst86/PROMISE.desc/issues
 Imports: dplyr,
     tidyr,
     pander,
-    plyr
+    plyr,
+    utils
