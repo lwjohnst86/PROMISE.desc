@@ -13,7 +13,7 @@ desc_prevalence(.data, .variables)
 }
 \value{
 Wide dataset with time across the top and various disease/disorder
-  statuses below.
+statuses below.
 }
 \description{
 Input must be long format with subject id (SID), visit number (VN),

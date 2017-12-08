@@ -15,7 +15,7 @@ desc_table(.data, caption = NULL)
 Output the results of some descriptions of the dataset.
 }
 \description{
-Simply a thin wrapper around [pander::pander].
+Simply a thin wrapper around \link[pander:pander]{pander::pander}.
 }
 \examples{
 
