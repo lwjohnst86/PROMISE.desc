@@ -25,7 +25,7 @@ add_incidence <- function(.data, .variables, prefix = NULL) {
     incid <- .data %>%
         dplyr::group_by_("SID") %>%
         dplyr::mutate_at(.variables, dplyr::funs({
-            previous <- lag(.)
+            previous <- dplyr::lag(.)
             current <- .
             incid <- current - previous
             ifelse(incid < 0 | is.na(incid), 0, incid)
@@ -34,13 +34,9 @@ add_incidence <- function(.data, .variables, prefix = NULL) {
 
     if (!is.null(prefix)) {
         stopifnot(is.character(prefix))
-        search_pattern <- paste0("^(", paste(.variables, collapse = "|"), ")$")
-        new_name <- paste0(prefix, "\\1")
-        names(incid) <-
-            gsub(search_pattern, new_name, names(incid))
-
-        incid <-
-            dplyr::bind_cols(incid, dplyr::select_at(.data, .variables))
+        incid <- incid %>%
+            dplyr::rename_at(.variables, dplyr::funs(gsub("^", prefix, .))) %>%
+            dplyr::bind_cols(dplyr::select_at(.data, .variables))
     }
 
     return(incid)
